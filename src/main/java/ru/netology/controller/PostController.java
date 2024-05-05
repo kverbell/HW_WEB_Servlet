@@ -4,9 +4,11 @@ import com.google.gson.Gson;
 import ru.netology.model.Post;
 import ru.netology.service.PostService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
 
 public class PostController {
   public static final String APPLICATION_JSON = "application/json";
@@ -18,24 +20,38 @@ public class PostController {
 
   public void all(HttpServletResponse response) throws IOException {
     response.setContentType(APPLICATION_JSON);
-    final var data = service.all();
-    final var gson = new Gson();
+    List<Post> data = service.all();
+    Gson gson = new Gson();
     response.getWriter().print(gson.toJson(data));
   }
 
-  public void getById(long id, HttpServletResponse response) {
-    // TODO: deserialize request & serialize response
-  }
-
-  public void save(Reader body, HttpServletResponse response) throws IOException {
+  public void getById(long id, HttpServletResponse response) throws IOException {
     response.setContentType(APPLICATION_JSON);
-    final var gson = new Gson();
-    final var post = gson.fromJson(body, Post.class);
-    final var data = service.save(post);
-    response.getWriter().print(gson.toJson(data));
+    Post post = service.getById(id);
+    if (post != null) {
+      Gson gson = new Gson();
+      response.getWriter().print(gson.toJson(post));
+    } else {
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+    }
+  }
+
+  public void save(HttpServletRequest req, HttpServletResponse response) throws IOException {
+    response.setContentType(APPLICATION_JSON);
+    Gson gson = new Gson();
+    try (Reader reader = req.getReader()) {
+      Post post = gson.fromJson(reader, Post.class);
+      Post savedPost = service.save(post);
+      response.getWriter().print(gson.toJson(savedPost));
+    } catch (Exception e) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      response.getWriter().print(gson.toJson("Invalid request body"));
+    }
   }
 
   public void removeById(long id, HttpServletResponse response) {
-    // TODO: deserialize request & serialize response
+    response.setContentType(APPLICATION_JSON);
+    service.removeById(id);
+    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
   }
 }
