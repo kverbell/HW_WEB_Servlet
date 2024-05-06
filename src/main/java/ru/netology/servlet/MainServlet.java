@@ -9,6 +9,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 public class MainServlet extends HttpServlet {
+  private static final String METHOD_GET = "GET";
+  private static final String METHOD_POST = "POST";
+  private static final String METHOD_DELETE = "DELETE";
+
+  private static final String API_POSTS_PATH = "/api/posts";
+  private static final String REGEX_POST_ID = API_POSTS_PATH + "/\\d+";
+
   private PostController controller;
 
   @Override
@@ -24,18 +31,18 @@ public class MainServlet extends HttpServlet {
       final String path = req.getRequestURI();
       final String method = req.getMethod();
 
-      if (method.equals("GET")) {
-        if (path.equals("/api/posts")) {
+      if (method.equals(METHOD_GET)) {
+        if (path.equals(API_POSTS_PATH)) {
           controller.all(resp);
           return;
-        } else if (path.matches("/api/posts/\\d+")) {
+        } else if (path.matches(REGEX_POST_ID)) {
           controller.getById(req, resp);
           return;
         }
-      } else if (method.equals("POST") && path.equals("/api/posts")) {
+      } else if (method.equals(METHOD_POST) && path.equals(API_POSTS_PATH)) {
         controller.save(req, resp);
         return;
-      } else if (method.equals("DELETE") && path.matches("/api/posts/\\d+")) {
+      } else if (method.equals(METHOD_DELETE) && path.matches(REGEX_POST_ID)) {
         controller.removeById(req, resp);
         return;
       }
