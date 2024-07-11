@@ -1,10 +1,12 @@
 package ru.netology.repository;
 
+import org.springframework.stereotype.Repository;
 import ru.netology.model.Post;
 
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Repository
 public class PostRepository {
   private final List<Post> posts = new ArrayList<>();
   private long nextId = 1; // Инициализируем счетчик id

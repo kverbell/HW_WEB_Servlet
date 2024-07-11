@@ -16,7 +16,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
-                    <webappDirectory>E:\apache-tomcat-9.0.88\webapps\ROOT</webappDirectory>
+                    <webappDirectory>${project.build.directory}</webappDirectory>
                 </configuration>
             </plugin>
         </plugins>
@@ -41,6 +41,15 @@
             <version>2.9.1</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.3.27</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>5.3.27</version>
+        </dependency>
     </dependencies>
-
 </project>
