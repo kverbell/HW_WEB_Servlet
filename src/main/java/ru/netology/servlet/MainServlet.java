@@ -1,12 +1,17 @@
 package ru.netology.servlet;
 
+import ru.netology.congig.AppConfig;
 import ru.netology.controller.PostController;
-import ru.netology.repository.PostRepository;
-import ru.netology.service.PostService;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 
 public class MainServlet extends HttpServlet {
   private static final String METHOD_GET = "GET";
@@ -19,30 +24,29 @@ public class MainServlet extends HttpServlet {
   private PostController controller;
 
   @Override
-  public void init() {
-    final PostRepository repository = new PostRepository();
-    final PostService service = new PostService(repository);
-    controller = new PostController(service);
+  public void init() throws ServletException {
+    ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+    controller = context.getBean(PostController.class);
   }
 
   @Override
-  protected void service(HttpServletRequest req, HttpServletResponse resp) {
+  protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     try {
       final String path = req.getRequestURI();
       final String method = req.getMethod();
 
-      if (method.equals(METHOD_GET)) {
-        if (path.equals(API_POSTS_PATH)) {
+      if (METHOD_GET.equals(method)) {
+        if (API_POSTS_PATH.equals(path)) {
           controller.all(resp);
           return;
         } else if (path.matches(REGEX_POST_ID)) {
           controller.getById(req, resp);
           return;
         }
-      } else if (method.equals(METHOD_POST) && path.equals(API_POSTS_PATH)) {
+      } else if (METHOD_POST.equals(method) && API_POSTS_PATH.equals(path)) {
         controller.save(req, resp);
         return;
-      } else if (method.equals(METHOD_DELETE) && path.matches(REGEX_POST_ID)) {
+      } else if (METHOD_DELETE.equals(method) && path.matches(REGEX_POST_ID)) {
         controller.removeById(req, resp);
         return;
       }
